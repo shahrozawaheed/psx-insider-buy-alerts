@@ -8,6 +8,7 @@ WEBHOOK_URL = os.environ["DISCORD_WEBHOOK_URL"]
 
 # Pakistan date
 today = datetime.now(ZoneInfo("Asia/Karachi")).strftime("%Y-%m-%d")
+display_date = datetime.now(ZoneInfo("Asia/Karachi")).strftime("%B %d, %Y")
 
 # Get today's insider transactions
 response = requests.get(
@@ -36,7 +37,7 @@ if not buys:
     exit(0)
 
 # Build Discord message
-message = f"**PSX Insider Transactions BUY**\n**{today}**\n\n"
+message = f"**PSX Insider Transactions BUY**\nDate: {display_date}\n\n"
 
 for i, t in enumerate(buys, start=1):
     symbol = t.get("symbol", "N/A")
@@ -58,10 +59,13 @@ for i, t in enumerate(buys, start=1):
 
     message += "\n"
 
-# Send normal Discord message
+# Send Discord message
 discord_response = requests.post(
     WEBHOOK_URL,
-    json={"content": message},
+    json={
+        "content": message,
+        "flags": 4
+    },
     timeout=30
 )
 
