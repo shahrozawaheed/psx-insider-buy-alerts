@@ -30,13 +30,13 @@ buys = [
     if str(t.get("action", "")).strip().lower() == "buy"
 ]
 
-# Don't send anything if there are no buys
+# Don't send anything if there are no BUY transactions
 if not buys:
     print(f"No insider BUY transactions for {today}")
     exit(0)
 
 # Build Discord message
-description = ""
+message = f"**PSX Insider Transactions BUY**\n**{today}**\n\n"
 
 for i, t in enumerate(buys, start=1):
     symbol = t.get("symbol", "N/A")
@@ -46,7 +46,7 @@ for i, t in enumerate(buys, start=1):
     rate = t.get("rate", 0)
     attachment = t.get("attachment")
 
-    description += (
+    message += (
         f"**{i}. {symbol}**\n"
         f"👤 {name}\n"
         f"💼 {position}\n"
@@ -54,26 +54,14 @@ for i, t in enumerate(buys, start=1):
     )
 
     if attachment:
-        description += f"📎 [PSX Document]({attachment})\n"
+        message += f"📎 [PSX Document]({attachment})\n"
 
-    description += "\n"
+    message += "\n"
 
-payload = {
-    "embeds": [
-        {
-            "title": "🟢 PSX INSIDER BUY — DAILY SUMMARY",
-            "description": description,
-            "color": 3066993,
-            "footer": {
-                "text": f"Sarmaaya • {today}"
-            }
-        }
-    ]
-}
-
+# Send normal Discord message
 discord_response = requests.post(
     WEBHOOK_URL,
-    json=payload,
+    json={"content": message},
     timeout=30
 )
 
